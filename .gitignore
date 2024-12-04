@@ -1,0 +1,13 @@
+.vscode/
+lpf
+lpf_server
+lpf.exe
+lpf_server.exe
+test
+test.exe
+Tests/
+server_root/*
+logs/
+very_safe_trust_me_bro.txt
+.env
+server-volume/

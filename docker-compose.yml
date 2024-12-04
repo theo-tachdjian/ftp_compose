@@ -1,0 +1,50 @@
+name: lpf-ftp
+
+services:
+  lpf-server:
+    build:
+      dockerfile: Dockerfile-server
+    env_file: .env
+    ports:
+      - "${SERVER_INTERNAL_PORT}:${SERVER_PORT}"
+    environment:
+      - PORT=${SERVER_INTERNAL_PORT}
+    volumes:
+      - server-data:/home/server
+    networks:
+      - lpf-ftpnet
+  
+  lpf-client:
+    build:
+      dockerfile: Dockerfile-client
+    env_file: .env
+    environment:
+      - LPF_SERVER_ADDR=${SERVER_ADDR}
+      - LPF_SERVER_PORT=${SERVER_PORT}
+    volumes:
+      - client-data:/home/client
+    networks:
+      - lpf-ftpnet
+    tty: true
+    depends_on:
+      - lpf-server
+
+
+networks:
+  lpf-ftpnet:
+
+
+volumes:
+  server-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './server-volume'
+  
+  client-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './'

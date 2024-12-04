@@ -1,0 +1,27 @@
+FROM alpine:latest
+
+COPY ./include/LPTF_Net /source/include/LPTF_Net
+COPY ./include/file_utils.hpp /source/include/file_utils.hpp
+COPY ./include/logger.hpp /source/include/logger.hpp
+COPY ./include/server_actions.hpp /source/include/server_actions.hpp
+
+COPY ./src/LPTF_Net /source/src/LPTF_Net
+COPY ./src/file_utils.cpp /source/src/file_utils.cpp
+COPY ./src/logger.cpp /source/src/logger.cpp
+COPY ./src/server_actions.cpp /source/src/server_actions.cpp
+
+COPY ./src/server.cpp /source/src/server.cpp
+
+COPY ./Makefile /source
+
+# install make and compiler, build lpf_server, copy to /, remove /source and packages
+RUN apk update && apk add --no-cache libstdc++ libgcc make g++ && make -C /source server && cp /source/lpf_server /lpf_server && rm -r /source && apk del make g++
+
+RUN adduser server -D
+USER server
+WORKDIR /home/server
+
+ENV PORT 12345
+EXPOSE 12345
+
+CMD /lpf_server $PORT

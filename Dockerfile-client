@@ -1,0 +1,28 @@
+FROM alpine:latest
+
+COPY ./include/LPTF_Net /source/include/LPTF_Net
+COPY ./include/file_utils.hpp /source/include/file_utils.hpp
+COPY ./include/client_actions.hpp /source/include/client_actions.hpp
+
+COPY ./src/LPTF_Net /source/src/LPTF_Net
+COPY ./src/file_utils.cpp /source/src/file_utils.cpp
+COPY ./src/client_actions.cpp /source/src/client_actions.cpp
+
+COPY ./src/client.cpp /source/src/client.cpp
+
+COPY ./Makefile /source
+
+# install libstdc++, make and compiler, build lpf, copy to /, remove /source and packages
+RUN apk update && apk add --no-cache libstdc++ libgcc make g++ && make -C /source client && cp /source/lpf /lpf && rm -r /source && apk del make g++
+
+RUN adduser client -D
+USER client
+WORKDIR /home/client
+
+# ENTRYPOINT ["/lpf"]
+
+ENV LPF_SERVER_ADDR lpf-server
+ENV LPF_SERVER_PORT 12345
+
+COPY ./scripts/run_lpf_client.sh /run_lpf_client.sh
+CMD ["sh", "/run_lpf_client.sh"]
