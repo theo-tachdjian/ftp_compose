@@ -1,3 +1,4 @@
+#!/bin/bash
 sudo docker run \
     --name lpf-server \
     --network lpf-ftpnet \

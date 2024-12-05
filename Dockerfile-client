@@ -13,11 +13,14 @@ COPY ./src/client.cpp /source/src/client.cpp
 COPY ./Makefile /source
 
 # install libstdc++, make and compiler, build lpf, copy to /, remove /source and packages
-RUN apk update && apk add --no-cache libstdc++ libgcc make g++ && make -C /source client && cp /source/lpf /lpf && rm -r /source && apk del make g++
+RUN apk update \
+    && apk add --no-cache libstdc++ libgcc make g++ \
+    && make -C /source client \
+    && cp /source/lpf /lpf \
+    && rm -r /source \
+    && apk del make g++
 
-RUN adduser client -D
-USER client
-WORKDIR /home/client
+WORKDIR /app
 
 # ENTRYPOINT ["/lpf"]
 

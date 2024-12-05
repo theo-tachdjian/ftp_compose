@@ -1,3 +1,4 @@
+#!/bin/sh
 EXECUTABLE=/lpf
 
 run_command()

@@ -10,7 +10,7 @@ services:
     environment:
       - PORT=${SERVER_INTERNAL_PORT}
     volumes:
-      - server-data:/home/server
+      - server-data:/app
     networks:
       - lpf-ftpnet
   
@@ -22,10 +22,11 @@ services:
       - LPF_SERVER_ADDR=${SERVER_ADDR}
       - LPF_SERVER_PORT=${SERVER_PORT}
     volumes:
-      - client-data:/home/client
+      - client-data:/app
     networks:
       - lpf-ftpnet
     tty: true
+    stdin_open: true
     depends_on:
       - lpf-server
 

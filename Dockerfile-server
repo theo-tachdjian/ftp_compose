@@ -15,11 +15,14 @@ COPY ./src/server.cpp /source/src/server.cpp
 COPY ./Makefile /source
 
 # install make and compiler, build lpf_server, copy to /, remove /source and packages
-RUN apk update && apk add --no-cache libstdc++ libgcc make g++ && make -C /source server && cp /source/lpf_server /lpf_server && rm -r /source && apk del make g++
+RUN apk update \
+    && apk add --no-cache libstdc++ libgcc make g++ \
+    && make -C /source server \
+    && cp /source/lpf_server /lpf_server \
+    && rm -r /source \
+    && apk del make g++
 
-RUN adduser server -D
-USER server
-WORKDIR /home/server
+WORKDIR /app
 
 ENV PORT 12345
 EXPOSE 12345

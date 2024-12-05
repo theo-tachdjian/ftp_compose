@@ -1,3 +1,4 @@
+#!/bin/bash
 sudo docker run \
     -i \
     --name lpf-client \
