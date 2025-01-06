@@ -11,3 +11,5 @@ logs/
 very_safe_trust_me_bro.txt
 .env
 server-volume/
+database/data/*
+monitoring/prometheus-data/*

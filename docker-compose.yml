@@ -1,6 +1,21 @@
 name: lpf-ftp
 
 services:
+  lpf-db:
+    image: postgres:13
+    env_file: .env
+    ports:
+      - "5432:${DB_PORT}"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - initdb:/docker-entrypoint-initdb.d
+    networks:
+      - lpf-ftpnet
+  
   lpf-server:
     build:
       dockerfile: Dockerfile-server
@@ -13,6 +28,8 @@ services:
       - server-data:/app
     networks:
       - lpf-ftpnet
+    depends_on:
+      - lpf-db
   
   lpf-client:
     build:
@@ -29,6 +46,49 @@ services:
     stdin_open: true
     depends_on:
       - lpf-server
+  
+  # monitoring
+  lpf-prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    networks:
+      - lpf-ftpnet
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus/
+      - ./monitoring/prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    depends_on:
+      - lpf-cadvisor
+  
+  lpf-cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - lpf-ftpnet
+    volumes:  # resources to watch
+      - ./:/rootfs:ro
+  
+  lpf-node-exporter:
+    image: prom/node-exporter:latest
+    depends_on:
+      - lpf-prometheus
+    ports:
+      - "9100:9100"
+    networks:
+      - lpf-ftpnet
+  
+  lpf-grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - lpf-prometheus
+    ports:
+      - "3000:3000"
+    networks:
+      - lpf-ftpnet
 
 
 networks:
@@ -36,6 +96,19 @@ networks:
 
 
 volumes:
+  db-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './database/data'
+  initdb:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './database/init'
+  
   server-data:
     driver: local
     driver_opts:
