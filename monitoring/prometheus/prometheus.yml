@@ -17,10 +17,6 @@ scrape_configs:
     static_configs:
       - targets: ['node-exporter:9100']
   
-  - job_name: 'server'
-    scrape_interval: 5s 
-    static_configs:
-      - targets: ['lpf-server:12345']
   - job_name: 'db'
     scrape_interval: 5s 
     static_configs:
