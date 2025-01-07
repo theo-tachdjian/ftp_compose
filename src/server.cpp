@@ -176,7 +176,7 @@ string wait_for_login(LPTF_Socket *serverSocket, int clientSockfd) {
 
 Logger *get_user_logger(string username) {
     try {
-        return new Logger(get_server_logs_folder() / (username + ".txt"));
+        return new Logger(get_server_logs_folder() / username);
     } catch (const runtime_error &ex) {
         cerr << "Logger not available: " << ex.what() << endl;
     }

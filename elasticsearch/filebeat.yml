@@ -1,0 +1,10 @@
+filebeat.inputs:
+- type: filestream
+  id: lpf-server-logs
+  paths:
+    - "/app/server/logs/*"
+
+output.elasticsearch:
+  hosts: 'lpf-elasticsearch:9200'
+  username: '${ELASTIC_USERNAME}'
+  password: '${ELASTIC_PASSWORD}'
