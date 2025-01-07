@@ -20,7 +20,7 @@ Reprise du projet FTP en utilisant docker.
 - SERVER_ADDR : L'adresse où le client devra se connecter
 
 - DB_PORT : Le port à utiliser pour se connecter à la base de données
-- DB_ADDR : L'addresse à utiliser pour se connecter à la base de données
+- DB_ADDR : L'adresse à utiliser pour se connecter à la base de données
 - DB_USER : L'utilisateur pour la base de données
 - DB_NAME : Le nom de la base de données
 - DB_PASSWD : Le mot de passe de l'utilisateur de la base de données
