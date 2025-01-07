@@ -12,11 +12,27 @@ COPY ./src/client.cpp /source/src/client.cpp
 
 COPY ./Makefile /source
 
+RUN apk add --no-cache \
+    build-base \
+    postgresql-dev \
+    cmake \
+    g++ \
+    wget \
+    git
+
+RUN git clone https://github.com/jtv/libpqxx.git /libpqxx && \
+    cd /libpqxx && \
+    cmake -S . -B build && \
+    cmake --build build --target install && \
+    cd .. && rm -rf /libpqxx
+
 # install libstdc++, make and compiler, build lpf, copy to /, remove /source and packages
 RUN apk update \
     && apk add --no-cache libstdc++ libgcc make g++ \
     && make -C /source client \
     && cp /source/lpf /lpf \
+    && make -C /source test_client \
+    && cp /source/test /test \
     && rm -r /source \
     && apk del make g++
 
