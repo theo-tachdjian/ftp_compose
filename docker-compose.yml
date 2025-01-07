@@ -30,6 +30,12 @@ services:
       - lpf-ftpnet
     depends_on:
       - lpf-db
+      - lpf-prometheus
+      - lpf-grafana
+      - lpf-node-exporter
+      - lpf-elasticsearch
+      - lpf-filebeat
+      - lpf-kibana
   
   lpf-client:
     build:
