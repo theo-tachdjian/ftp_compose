@@ -12,31 +12,29 @@ COPY ./src/server_actions.cpp /source/src/server_actions.cpp
 
 COPY ./src/server.cpp /source/src/server.cpp
 
+COPY ./src/tests/unit_tests_server.cpp /source/src/tests/unit_tests_server.cpp
+
 COPY ./Makefile /source
 
-RUN apk add --no-cache \
-    build-base \
-    postgresql-dev \
-    cmake \
-    g++ \
-    wget \
-    git
-
-RUN git clone https://github.com/jtv/libpqxx.git /libpqxx && \
-    cd /libpqxx && \
-    cmake -S . -B build && \
-    cmake --build build --target install && \
-    cd .. && rm -rf /libpqxx
-
-# install make and compiler, build lpf_server, copy to /, remove /source and packages
+# install make, compiler and packages
+# build libpqxx from https://github.com/jtv/libpqxx.git with cmake
+# remove libpqxx source
+# build lpf_server
+# copy to /
+# remove /source and packages
 RUN apk update \
     && apk add --no-cache libstdc++ libgcc make g++ \
+    build-base postgresql-dev cmake wget git \
+    && git clone https://github.com/jtv/libpqxx.git /libpqxx && cd /libpqxx \
+    && cmake -S . -B build && cmake --build build --target install \
+    && cd .. && rm -rf /libpqxx \
     && make -C /source server \
     && cp /source/lpf_server /lpf_server \
     && make -C /source test_server \
     && cp /source/test /test \
     && rm -r /source \
-    && apk del make g++
+    && apk del make g++ \
+    build-base postgresql-dev cmake wget git
 
 WORKDIR /app
 

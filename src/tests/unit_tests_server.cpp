@@ -1,19 +1,18 @@
 #include <iostream>
-#include <pqxx/pqxx>
 #include <ctime>
-#include <sstream>
+#include <pqxx/pqxx>
 
-void send_result(pqxx::connection connection, std::string name,bool ok){
-    pqxx::work transaction(connection);
-    std::ostreamstring format;
-    format << "INSERT INTO tests(name, timestamp, result) VALUES (" << name << ", " << time(0) << ", " << static_cast<int>(ok) << ");";
-    pqxx::result result = transaction.exec(format.str());
+
+void send_result(pqxx::connection &cx, std::string name,bool ok) {
+    pqxx::work transaction(cx);
+    pqxx::result result = transaction.exec("INSERT INTO tests(name, timestamp, result) VALUES ($1, $2, $3)", pqxx::params{name, time(0), static_cast<int>(ok)});
+    transaction.commit();
 }
 
-void testBasic(pqxx::connection connection) {
+bool testBasic() {
     char a = 2;
     char b = 3;
-    send_result(connection, "testBasic", a+b==5);
+    return a+b==5;
 }
 
 int main() {
@@ -31,14 +30,16 @@ int main() {
             " user=" + std::string(db_user) +
             " password=" + std::string(db_password);
     
-        pqxx::connection connection(connection_string);
+        pqxx::connection cx(connection_string);
 
-        testBasic(connection);
+        // run tests
+        send_result(cx, "testBasic", testBasic());
+
+        cx.close();
 
     } catch (const std::exception &e) {
-        std::cerr << "Erreur : " << e.what() << std::endl;
+        std::cerr << "Error when running tests : " << e.what() << std::endl;
         return 1;
     }
-    connection.disconnect();
     return 0;
 }

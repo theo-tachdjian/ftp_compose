@@ -3,11 +3,11 @@ lpf
 lpf_server
 lpf.exe
 lpf_server.exe
-test
-test.exe
-Tests/
+test_data/
 server_root/*
 logs/
 very_safe_trust_me_bro.txt
 .env
 server-volume/
+database/data/*
+monitoring/prometheus-data/*
