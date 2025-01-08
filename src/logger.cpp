@@ -11,18 +11,21 @@ using namespace std;
 
 Logger::Logger() {
     size_limit = LOG_DEFAULT_SIZE_LIMIT;
-    filename = "log.txt";
+    basename = "log";
+    filename = get_new_filename();
     log_file = ofstream(filename, ios::app);
     if (!log_file.is_open()) throw runtime_error("Could not open log file !");
 }
 
-Logger::Logger(const string &filename): filename{ filename } {
+Logger::Logger(const string &basename): basename{ basename } {
     size_limit = LOG_DEFAULT_SIZE_LIMIT;
+    filename = get_new_filename();
     log_file = ofstream(filename, ios::app);
     if (!log_file.is_open()) throw runtime_error("Could not open log file !");
 }
 
-Logger::Logger(const string &filename, unsigned int size_limit = LOG_DEFAULT_SIZE_LIMIT): size_limit{ size_limit }, filename{ filename } {
+Logger::Logger(const string &basename, unsigned int size_limit = LOG_DEFAULT_SIZE_LIMIT): size_limit{ size_limit }, basename{ basename } {
+    filename = get_new_filename();
     log_file = ofstream(filename, ios::app);
     if (!log_file.is_open()) throw runtime_error("Could not open log file !");
 }
@@ -32,12 +35,11 @@ Logger::~Logger() {
 }
 
 
-void Logger::check_purge() {
+void Logger::check_change_file() {
     if (log_file.is_open() && get_file_size(filename) > size_limit) {
-        cout << "Removing log file " << filename << endl;
-
         log_file.close();
-        fs::remove(filename);
+        filename = get_new_filename();
+        cout << "Creating new log file " << filename << endl;
         log_file = ofstream(filename, ios::app);
 
         if (!log_file.is_open()) throw runtime_error("Could not open log file !");
@@ -45,8 +47,16 @@ void Logger::check_purge() {
 }
 
 
+string Logger::get_new_filename() {
+    time_t now = time(0);
+    char timestamp[20];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d-%H-%M-%S", localtime(&now));
+    return basename + "-" + timestamp + ".txt";
+}
+
+
 void Logger::log(const string &level, const string &message) {
-    check_purge();
+    check_change_file();
 
     time_t now = time(0);
     char timestamp[20];

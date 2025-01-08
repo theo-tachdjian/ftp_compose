@@ -11,16 +11,18 @@ class Logger {
 
 private:
     unsigned int size_limit;
+    string basename;
     string filename;
     ofstream log_file;
 
     virtual void log(const string &level, const string &message);
-    virtual void check_purge();
+    virtual void check_change_file();
+    string get_new_filename();
 
 public:
     Logger();
-    Logger(const string &filename);
-    Logger(const string &filename, unsigned int size_limit);
+    Logger(const string &basename);
+    Logger(const string &basename, unsigned int size_limit);
 
     ~Logger();
 
