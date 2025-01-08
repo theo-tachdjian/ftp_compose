@@ -13,6 +13,9 @@ Reprise du projet FTP en utilisant docker.
 #### - Avez-vous besoin de copier tous les fichiers source ?
 - Seulement ceux utilisés par le client / par le serveur
 
+### Lancement des tests pour les conteneurs client et serveur
+docker exec -it CONTAINER /test
+
 ### Variables d'environnement:
 
 - SERVER_INTERNAL_PORT : Le port où le serveur est bindé dans le conteneur
